@@ -76,7 +76,7 @@ impl Default for FixedSpriteBundle {
 
 #[derive(Bundle, Clone, Default)]
 pub struct FixedSpriteSheetBundle {
-    pub sprite: TextureAtlasSprite,
+    pub sprite: FixedTextureAtlasSprite,
     pub texture_atlas: Handle<TextureAtlas>,
     pub transform: Transform,
     pub global_transform: GlobalTransform,
