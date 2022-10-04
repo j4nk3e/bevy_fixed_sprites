@@ -33,7 +33,7 @@ fn setup(
                     ..Default::default()
                 },
                 texture: asset_server.load("sprite.png"),
-                transform: Transform::from_translation(-translation),
+                transform: Transform::from_translation(-translation  + (i as f32) * Vec3::Z),
                 ..Default::default()
             })
             .id();
@@ -44,7 +44,7 @@ fn setup(
                     ..Default::default()
                 },
                 texture: asset_server.load("sprite.png"),
-                transform: Transform::from_translation(translation),
+                transform: Transform::from_translation(translation  + (i as f32) * Vec3::Z),
                 ..Default::default()
             })
             .id();
