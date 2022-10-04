@@ -4,6 +4,8 @@ Bevy sprites that don't rotate or scale with their transform.
 
 Supports Bevy 0.8
 
+![/media/fixed_sprite.png](/media/fixed_sprite.PNG)
+
 #
 ### Cargo
 ```toml
