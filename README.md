@@ -1,14 +1,16 @@
 # bevy_fixed_sprites
 
+[![crates.io](https://img.shields.io/crates/v/bevy_fixed_sprites)](https://crates.io/crates/bevy_fixed_sprites)
+[![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/ickshonpe/bevy_fixed_sprites)
+[![crates.io](https://img.shields.io/crates/d/bevy_fixed_sprites)](https://crates.io/crates/bevy_fixed_sprites)
+
 Bevy sprites that don't rotate or scale with their transform.
 
-
-![/media/fixed_sprite.png](/media/fixed_sprite.PNG)
+![image](/assets/fixed_sprite.PNG)
 
 All these sprites have the same scale and rotation.
 
 Supports Bevy 0.8
-
 
 #
 ### Cargo

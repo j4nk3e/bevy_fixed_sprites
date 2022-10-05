@@ -83,7 +83,57 @@ pub struct FixedSpriteSheetBundle {
     pub visibility: Visibility,
     pub computed_visibility: ComputedVisibility,
 }
-    
+
+impl From<Sprite> for FixedSprite {
+    fn from(sprite: Sprite) -> Self {
+        Self {
+            color: sprite.color,
+            flip_x: sprite.flip_x,
+            flip_y: sprite.flip_y,
+            custom_size: sprite.custom_size,
+            anchor: sprite.anchor,
+        }
+    }
+}
+
+impl From<FixedSprite> for Sprite {
+    fn from(sprite: FixedSprite) -> Self {
+        Self {
+            color: sprite.color,
+            flip_x: sprite.flip_x,
+            flip_y: sprite.flip_y,
+            custom_size: sprite.custom_size,
+            anchor: sprite.anchor,
+        }
+    }
+}
+
+impl From<TextureAtlasSprite> for FixedTextureAtlasSprite {
+    fn from(sprite: TextureAtlasSprite) -> Self {
+        Self {
+            color: sprite.color,
+            flip_x: sprite.flip_x,
+            flip_y: sprite.flip_y,
+            custom_size: sprite.custom_size,
+            anchor: sprite.anchor,
+            index: sprite.index,
+        }
+    }
+}
+
+impl From<FixedTextureAtlasSprite> for TextureAtlasSprite {
+    fn from(sprite: FixedTextureAtlasSprite) -> Self {
+        Self {
+            color: sprite.color,
+            flip_x: sprite.flip_x,
+            flip_y: sprite.flip_y,
+            custom_size: sprite.custom_size,
+            anchor: sprite.anchor,
+            index: sprite.index,
+        }
+    }
+}
+
 pub fn extract_fixed_sprites(
     mut extracted_sprites: ResMut<ExtractedSprites>,
     texture_atlases: Extract<Res<Assets<TextureAtlas>>>,

@@ -1,11 +1,11 @@
 [package]
 name = "bevy_fixed_sprites"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 keywords = ["bevy", "graphics", "sprites", "games", "render"]
 categories = ["game-development", "graphics"]
-repository = "https://github.com/ickshonpe/bevy_fixed_sprite"
+repository = "https://github.com/ickshonpe/bevy_fixed_sprites"
 readme = "README.md"
 description = "Bevy sprites that don't rotate or scale with their transform"
 
