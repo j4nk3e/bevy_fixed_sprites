@@ -21,7 +21,6 @@ fn setup(
         ..Default::default()
     })
     .id();
-
     let sprite_id = commands
         .spawn_bundle(SpriteBundle {
             sprite: Sprite { 
@@ -34,7 +33,6 @@ fn setup(
             ..Default::default()
         })
         .id();
-
     let fixed_sprite_id_2 = commands.spawn_bundle(FixedSpriteBundle {
         sprite: FixedSprite { 
             color: Color::RED,
@@ -57,8 +55,7 @@ fn setup(
         transform: Transform::from_translation(2. * S * Vec3::X),
         ..Default::default()
     })
-    .id();
-   
+    .id();   
     commands.entity(fixed_sprite_id).add_child(sprite_id);
     commands.entity(sprite_id).add_child(fixed_sprite_id_2);
     commands.entity(fixed_sprite_id_2).add_child(sprite_id_2);
@@ -80,7 +77,6 @@ fn update(
                 ..Default::default()
             });  
         });
-
         fixed_sprite_query.for_each(|entity| {
             commands.entity(entity)
             .remove::<FixedSprite>()
@@ -91,7 +87,6 @@ fn update(
             });  
         });
     }
-
 }
 
 fn main() {
