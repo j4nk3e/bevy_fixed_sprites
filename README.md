@@ -20,12 +20,12 @@ bevy_fixed_sprites = 0.1
 ```
 
 ### Plugin
-You need to add the `BevyFixedSpritePlugin` to your Bevy App before you can draw a
+You need to add the `FixedSpritePlugin` to your Bevy App before you can draw a
 `FixedSprite`
 
 ```rust
 use bevy_fixed_sprites::*;
-app.add_plugin(BevyFixedSpritesPlugin);
+app.add_plugin(FixedSpritesPlugin);
 ```
 
 ### Usage
