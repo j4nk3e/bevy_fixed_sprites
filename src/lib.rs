@@ -9,6 +9,7 @@ use bevy::sprite::ExtractedSprites;
 use bevy::sprite::SpriteSystem;
 use copyless::*;
 
+/// A sprite that doesn't rotate or scale 
 #[derive(Component, Debug, Default, Clone, Reflect)]
 #[repr(C)]
 pub struct FixedSprite {
@@ -19,6 +20,7 @@ pub struct FixedSprite {
     pub anchor: Anchor,
 }
 
+/// A sprite from a texture atlas that doesn't rotate or scale 
 #[derive(Component, Debug, Clone, Reflect)]
 pub struct FixedTextureAtlasSprite {
     pub color: Color,
