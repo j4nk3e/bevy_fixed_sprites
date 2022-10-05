@@ -6,7 +6,7 @@
 
 Bevy sprites that ignore rotation and scaling.
 
-![image](/assets/fixed_sprite.png)
+![image](/assets/example.png)
 
 All these sprite's transforms have the same scale and rotation.
 
