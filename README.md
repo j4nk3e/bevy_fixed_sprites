@@ -16,7 +16,7 @@ Supports Bevy 0.8
 ### Cargo 
 ```toml
 [dependency]
-bevy_fixed_sprites = 0.1
+bevy_fixed_sprites = 0.2
 ```
 
 ### Plugin

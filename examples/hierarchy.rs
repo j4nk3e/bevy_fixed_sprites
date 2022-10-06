@@ -75,11 +75,13 @@ fn update(
                 color: Color::RED,
                 custom_size: Some(S * Vec2::ONE),
                 ..Default::default()
-            });  
+            })
+            .insert_bundle(SpriteRotationBundle::default());
         });
         fixed_sprite_query.for_each(|entity| {
             commands.entity(entity)
             .remove::<FixedSprite>()
+            .remove_bundle::<SpriteRotationBundle>()
             .insert(Sprite { 
                 color: Color::WHITE,
                 custom_size: Some(S * Vec2::ONE),

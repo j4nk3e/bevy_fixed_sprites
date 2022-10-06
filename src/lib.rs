@@ -1,3 +1,4 @@
+use bevy::math::Affine3A;
 use bevy::prelude::*;
 use bevy::render::Extract;
 use bevy::render::RenderApp;
@@ -8,6 +9,34 @@ use bevy::sprite::ExtractedSprite;
 use bevy::sprite::ExtractedSprites;
 use bevy::sprite::SpriteSystem;
 use copyless::*;
+
+/// rotation of the sprite in radians
+#[derive(Component, Debug, Default, Clone, Reflect, Deref, DerefMut)]
+pub struct FixedTransform(pub Transform);
+
+/// rotation matrix for the sprite, computed internally by the plugin's systems
+#[derive(Component, Debug, Default, Clone, Reflect, Deref, DerefMut)]
+pub struct FixedGlobalTransform(pub GlobalTransform);
+
+#[derive(Bundle, Clone, Default)]
+pub struct SpriteRotationBundle {
+    transform: FixedTransform,
+    global: FixedGlobalTransform,
+}
+
+impl From<Transform> for FixedTransform {
+    #[inline]
+    fn from(transform: Transform) -> Self {
+        Self(transform)
+    }
+}
+
+impl From<FixedTransform> for Transform {
+    #[inline]
+    fn from(fixed_transform: FixedTransform) -> Self {
+        fixed_transform.0
+    }
+}
 
 /// A sprite that doesn't rotate or scale 
 #[derive(Component, Debug, Default, Clone, Reflect)]
@@ -61,6 +90,8 @@ pub struct FixedSpriteBundle {
     pub texture: Handle<Image>,
     pub visibility: Visibility,
     pub computed_visibility: ComputedVisibility,
+    pub rotation: FixedTransform,
+    pub rotation_matrix: FixedGlobalTransform,
 }
 
 impl Default for FixedSpriteBundle {
@@ -72,6 +103,8 @@ impl Default for FixedSpriteBundle {
             texture: DEFAULT_IMAGE_HANDLE.typed(),
             visibility: Default::default(),
             computed_visibility: Default::default(),
+            rotation: Default::default(),
+            rotation_matrix: Default::default(),
         }
     }
 }
@@ -84,6 +117,8 @@ pub struct FixedSpriteSheetBundle {
     pub global_transform: GlobalTransform,
     pub visibility: Visibility,
     pub computed_visibility: ComputedVisibility,
+    pub rotation: FixedTransform,
+    pub rotation_matrix: FixedGlobalTransform,
 }
 
 impl From<Sprite> for FixedSprite {
@@ -136,6 +171,14 @@ impl From<FixedTextureAtlasSprite> for TextureAtlasSprite {
     }
 }
 
+pub fn update_fixed_transforms(
+    mut query: Query<(&FixedTransform, &mut FixedGlobalTransform), Changed<FixedTransform>>, 
+) {
+    query.for_each_mut(|(ftf, mut fgtf)| {
+        fgtf.0 = ftf.0.into();
+    });
+}
+
 pub fn extract_fixed_sprites(
     mut extracted_sprites: ResMut<ExtractedSprites>,
     texture_atlases: Extract<Res<Assets<TextureAtlas>>>,
@@ -145,6 +188,7 @@ pub fn extract_fixed_sprites(
             &ComputedVisibility,
             &FixedSprite,
             &GlobalTransform,
+            &FixedGlobalTransform,
             &Handle<Image>,
         )>,
     >,
@@ -154,16 +198,19 @@ pub fn extract_fixed_sprites(
             &ComputedVisibility,
             &FixedTextureAtlasSprite,
             &GlobalTransform,
+            &FixedGlobalTransform,
             &Handle<TextureAtlas>,
         )>,
     >,
 ) {
-    let mut transform = GlobalTransform::default();
-    for (entity, visibility, sprite, global_transform, handle) in sprite_query.iter() {
+    for (entity, visibility, sprite, global_transform, fixed_transform, handle) in sprite_query.iter() {
         if !visibility.is_visible() {
             continue;
         }
-        *transform.translation_mut() = global_transform.translation_vec3a();
+        let transform = Affine3A {
+            matrix3: fixed_transform.affine().matrix3,
+            translation: fixed_transform.translation_vec3a() + global_transform.translation_vec3a(),
+        }.into();
         extracted_sprites.sprites.alloc().init(ExtractedSprite {
             entity,
             color: sprite.color,
@@ -176,13 +223,17 @@ pub fn extract_fixed_sprites(
             anchor: sprite.anchor.as_vec(),
         });
     }
-    for (entity, visibility, atlas_sprite, global_transform, texture_atlas_handle) in atlas_query.iter() {
+    for (entity, visibility, atlas_sprite, global_transform, fixed_transform, texture_atlas_handle) in atlas_query.iter() {
         if !visibility.is_visible() {
             continue;
         }
         if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
             let rect = Some(texture_atlas.textures[atlas_sprite.index as usize]);
-            *transform.translation_mut() = global_transform.translation_vec3a();
+            let transform = Affine3A {
+                matrix3: fixed_transform.affine().matrix3,
+                translation: fixed_transform.translation_vec3a() + global_transform.translation_vec3a(),
+            }.into();
+            
             extracted_sprites.sprites.alloc().init(ExtractedSprite {
                 entity,
                 color: atlas_sprite.color,
@@ -198,13 +249,22 @@ pub fn extract_fixed_sprites(
     }
 }
 
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
+pub enum FixedSpriteSystem {
+    UpdateFixedTransforms
+}
+
 pub struct FixedSpritesPlugin;
 
 impl Plugin for FixedSpritesPlugin {
     fn build(&self, app: &mut App) {
         app
         .register_type::<FixedSprite>()
-        .register_type::<FixedTextureAtlasSprite>();
+        .register_type::<FixedTextureAtlasSprite>()
+        .register_type::<FixedTransform>()
+        .register_type::<FixedGlobalTransform>()
+        .add_system_to_stage(CoreStage::PostUpdate, update_fixed_transforms.label(FixedSpriteSystem::UpdateFixedTransforms))
+        ;
         if let Ok(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
             .add_system_to_stage(

@@ -55,13 +55,17 @@ fn setup(
 fn update(
     time: Res<Time>,
     mut point_query: Query<&mut Transform, With<Center>>,
-    mut transform_query: Query<&mut Transform, (Without<Center>, Without<Camera>)>
+    mut transform_query: Query<&mut Transform, (Without<Center>, Without<Camera>)>,
+    mut fixed_query: Query<&mut FixedTransform>,
 ) {
     point_query.for_each_mut(|mut transform| {
         transform.rotate_z(0.3 * time.delta_seconds());
     });
     transform_query.for_each_mut(|mut transform| {
         transform.scale = (1. + time.seconds_since_startup().sin() as f32) * Vec3::ONE;
+    });
+    fixed_query.for_each_mut(|mut transform| {
+        transform.rotation = Quat::from_rotation_z(0.2 * (2.5 * time.seconds_since_startup()).sin() as f32);
     });
 }
 
